@@ -3,6 +3,7 @@ import io
 import gzip
 from bs4 import BeautifulSoup
 import re
+import time
 
 
 
@@ -13,16 +14,15 @@ def getPhoneNumber(Referer, idi, idPhone):
     c.setopt(c.POST, 1)
     c.setopt(c.WRITEFUNCTION, response.write)
 
-    c.setopt(c.POSTFIELDS, 'idi=187022655&idphone=23097')
+    c.setopt(c.POSTFIELDS, 'idi=' + idi + '&idphone=' + idPhone)
     c.setopt(c.HTTPHEADER, ['Accept: /',
                             'Accept-Encoding: gzip, deflate, br, zstd',
                             'Accept-Language: cs-CZ,cz;q=0.9',
-                            'Content-Length: 27',
                             'Content-Type: application/x-www-form-urlencoded',
-                            'Cookie: rekkk=ano; _ga=GA1.1.1972335060.1717156671; cookie_consent_user_consent_token=IaxPN1F3GDNf; cookie_consent_user_accepted=true; bid=72447669; bkod=WY7UJ4RY43; testcookie=ano; cookie_consent_level=%7B%22strictly-necessary%22%3Atrue%2C%22functionality%22%3Atrue%2C%22tracking%22%3Atrue%2C%22targeting%22%3Atrue%7D; _ga_NZW1QTHKBB=GS1.1.1718355552.5.1.1718363569.0.0.0',
+                            'Cookie: rekkk=ano; _ga=GA1.1.646289452.1717752234; __gsas=ID=6189362fdc6b1e38:T=1717752240:RT=1717752240:S=ALNI_MbHd4SkLID6hlaAYwjxAwW4ExH_hA; cookie_consent_user_consent_token=ddymkzb5E7lF; cookie_consent_user_accepted=true; testcookie=ano; bid=72394779; btelefon=732111027; testcookieaaa=ano; rekkkb=ano; bkod=11XRGOUUOG; bmail=cervinkamichal0%40gmail.com; bjmeno=Michal; bheslo=Misa4589_; cookie_consent_level=%7B%22strictly-necessary%22%3Atrue%2C%22functionality%22%3Atrue%2C%22tracking%22%3Atrue%2C%22targeting%22%3Atrue%7D; _ga_NZW1QTHKBB=GS1.1.1718394476.11.1.1718394480.0.0.0',
                             'Origin: https://auto.bazos.cz',
                             'Priority: u=1,i',
-                            'Referer: https://auto.bazos.cz/inzerat/187022655/mazda-3-16-mz-cd-80-kw-klima-cr-nova-stk.php' ,
+                            'Referer: ' + Referer,
                             'Sec-Fetch-Dest: empty',
                             'Sec-Fetch-Mode: cors',
                             'Sec-Fetch-Site: same-origin',
@@ -35,7 +35,7 @@ def getPhoneNumber(Referer, idi, idPhone):
 
     # Dekompresování dat
     decompressed_data = gzip.decompress(compressed_data)
-    return decompressed_data.decode('utf-8')
+    return decompressed_data
 
 #getPhoneNumber('https://auto.bazos.cz/inzerat/187008051/skoda-fabia-3-fc-10tsi-70kw-combi-cr-dph-style-sport.php')
 
@@ -80,8 +80,12 @@ def getIdsFromListings(listings):
 
 Listings = getListingsUrls('20')
 ids = getIdsFromListings(Listings)
+
+
 counter = 0
 for listing in Listings:
+    if counter%3 == 0 and counter != 0:
+        time.sleep(20)
     print(counter)
     print(listing)
     print(ids[counter][0])
