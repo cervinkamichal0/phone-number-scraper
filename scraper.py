@@ -1,19 +1,20 @@
 import pycurl
 import io
+import gzip
 
 response = io.BytesIO()
 c = pycurl.Curl()
 c.setopt(c.URL, 'https://auto.bazos.cz/ad-phone.php')
 c.setopt(c.POST, 1)
 c.setopt(c.WRITEFUNCTION, response.write)
-c.setopt(c.COOKIEJAR, 'token.txt')
-c.setopt(c.COOKIEFILE, 'token.txt')
+
 c.setopt(c.POSTFIELDS, 'idi=187008051&idphone=4897862')
 c.setopt(c.HTTPHEADER, ['Accept: /',
                         'Accept-Encoding: gzip, deflate, br, zstd',
                         'Accept-Language: cs-CZ,cz;q=0.9',
                         'Content-Length: 29',
                         'Content-Type: application/x-www-form-urlencoded',
+                        'Cookie: rekkk=ano; _ga=GA1.1.1972335060.1717156671; cookie_consent_user_consent_token=IaxPN1F3GDNf; cookie_consent_user_accepted=true; bid=72447669; bkod=WY7UJ4RY43; testcookie=ano; cookie_consent_level=%7B%22strictly-necessary%22%3Atrue%2C%22functionality%22%3Atrue%2C%22tracking%22%3Atrue%2C%22targeting%22%3Atrue%7D; _ga_NZW1QTHKBB=GS1.1.1718355552.5.1.1718356825.0.0.0',
                         'Origin: https://auto.bazos.cz',
                         'Priority: u=1,i',
                         'Referer: https://auto.bazos.cz/inzerat/187008051/skoda-fabia-3-fc-10tsi-70kw-combi-cr-dph-style-sport.php',
@@ -24,5 +25,9 @@ c.setopt(c.HTTPHEADER, ['Accept: /',
 c.perform()
 c.close()
 
-print(print(response.getvalue().decode('windows-1252')))
+compressed_data = response.getvalue()
 response.close()
+
+# Dekompresování dat
+decompressed_data = gzip.decompress(compressed_data)
+print(decompressed_data.decode('utf-8'))
