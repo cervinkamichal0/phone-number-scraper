@@ -4,6 +4,8 @@ import gzip
 from bs4 import BeautifulSoup
 import re
 import time
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 
 
 
@@ -78,8 +80,21 @@ def getIdsFromListings(listings):
     return ids
 
 
+
 Listings = getListingsUrls('20')
 ids = getIdsFromListings(Listings)
+
+
+# Nastavení přístupových práv a autentizace
+scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/spreadsheets",
+         "https://www.googleapis.com/auth/drive.file", "https://www.googleapis.com/auth/drive"]
+
+creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope) #json file nebudu davat na github ten posle jen vam
+client = gspread.authorize(creds)
+
+# Vytvoření instance google sheet (link na sheet v commit message)
+sheet = client.open("BazosPhones").sheet1
+
 
 
 counter = 0
@@ -89,6 +104,10 @@ for listing in Listings:
     print(counter)
     print(listing)
     print(ids[counter][0])
-    print(ids[counter][1])  
-    print(getPhoneNumber(listing, ids[counter][0], ids[counter][1]))
+    print(ids[counter][1])
+    row = getPhoneNumber(listing, ids[counter][0], ids[counter][1])  
+    print(row)
+
+    #zapsání do google sheet
+    sheet.append_row([str(row)])
     counter += 1
