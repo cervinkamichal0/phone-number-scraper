@@ -6,6 +6,14 @@ import re
 import time
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import os
+
+# Todel aby fungovalo jak v konteineru tak na localu
+def set_cainfo(c):
+    ca_path = '/etc/ssl/certs/ca-certificates.crt'
+    if os.path.exists(ca_path):
+        c.setopt(pycurl.CAINFO, ca_path)
+
 
 def getPhoneNumber(Referer, idi, idPhone):
     response = io.BytesIO()
@@ -27,8 +35,7 @@ def getPhoneNumber(Referer, idi, idPhone):
                             'Sec-Fetch-Mode: cors',
                             'Sec-Fetch-Site: same-origin',
                             'User-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36 Edge/16.16299'])
-    # Set CA bundle path explicitly
-    c.setopt(pycurl.CAINFO, '/etc/ssl/certs/ca-certificates.crt')
+    set_cainfo(c)
     c.perform()
     c.close()
 
@@ -44,8 +51,7 @@ def getListingsUrls(pageNumber):
     c = pycurl.Curl()
     c.setopt(c.URL, 'https://auto.bazos.cz/' + pageNumber)
     c.setopt(c.WRITEFUNCTION, response.write)
-    # Set CA bundle path explicitly
-    c.setopt(pycurl.CAINFO, '/etc/ssl/certs/ca-certificates.crt')
+    set_cainfo(c)
     c.perform()
     c.close()
 
@@ -67,8 +73,7 @@ def getIdsFromListings(listings):
         c = pycurl.Curl()
         c.setopt(c.URL, url)
         c.setopt(c.WRITEFUNCTION, response.write)
-        # Set CA bundle path explicitly
-        c.setopt(pycurl.CAINFO, '/etc/ssl/certs/ca-certificates.crt')
+        set_cainfo(c)
         c.perform()
         c.close()
 
